@@ -6,15 +6,6 @@ import time
 import os
 from PIL import Image # 로컬 이미지를 쓰기 위해 추가!
 
-# --- [비밀 금고 자동 생성기] ---
-try:
-    os.makedirs(".streamlit", exist_ok=True)
-    if not os.path.exists(".streamlit/secrets.toml"):
-        with open(".streamlit/secrets.toml", "w", encoding="utf-8") as f:
-            f.write("# Secrets are managed in Streamlit Cloud Settings")
-except:
-    pass
-
 # 1. 페이지 설정 및 디자인
 st.set_page_config(page_title="For Cozybois", page_icon="🛋️", layout="centered")
 
