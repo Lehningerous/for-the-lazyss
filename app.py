@@ -4,6 +4,7 @@ import pandas as pd
 import random
 import time
 import os
+from PIL import Image # 로컬 이미지를 쓰기 위해 추가!
 
 # --- [비밀 금고 자동 생성기] ---
 try:
@@ -68,15 +69,22 @@ friends = [x for x in df_members["name"].tolist() if x.strip()] if not df_member
 # 5. 메인 화면 (서두 & 가이드)
 st.title("🛋️ For Cozybois")
 
-# [NEW] 서두 이미지 및 사용법 가이드
-# 아래 쌍따옴표 안의 인터넷 주소를 네가 원하는 이미지 주소로 언제든 바꿀 수 있어!
-COVER_IMAGE_URL = "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1000&auto=format&fit=crop"
-st.image(COVER_IMAGE_URL, use_container_width=True)
+# ⭐ [오늘의 핵심!] 로컬 이미지 로드
+# 깃허브에 cozybois_logo.png 라는 이름으로 이미지를 업로드해야 함!
+IMAGE_FILE = "cozybois_logo.png" 
+try:
+    cover_image = Image.open(IMAGE_FILE)
+    st.image(cover_image, use_container_width=True)
+except FileNotFoundError:
+    # 이미지가 없을 경우를 대비한 대체 URL (또는 경고)
+    st.warning(f"대표 이미지 '{IMAGE_FILE}' 파일을 찾을 수 없습니다. GitHub에 이미지를 업로드했는지 확인해줘!")
+    COVER_IMAGE_URL = "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1000&auto=format&fit=crop"
+    st.image(COVER_IMAGE_URL, use_container_width=True)
 
 st.info("""
 **📌 For Cozybois 사용 설명서**
 1. **후보 관리:** 메뉴/장소를 추가하려면 하단의 `멤버 및 장소 후보 추가하기`를 눌러.
-2. **거부권 행사:** 각자 절대 가기 싫은 곳을 하나씩 골라 밴(Ban)을 해줘.
+2. **거부권 행사:** 각자 절대 가기 싫은 곳을 하나씩 골라 밴(Ban) 해줘.
 3. **돌림판 돌리기:** 모두가 밴을 완료해야만 주사위를 굴릴 수 있어! 🎲
 """)
 
@@ -98,7 +106,7 @@ with st.expander("📝 멤버 및 장소 후보 추가하기"):
 
 st.write("---")
 
-# --- [B] 거부권 행사 (위로 올라옴) ---
+# --- [B] 거부권 행사 ---
 st.write("### 🚫 거부권 행사")
 c1, c2 = st.columns(2)
 with c1:
@@ -113,7 +121,7 @@ if st.button("밴 등록하기"):
     st.success("반영 완료!")
     st.rerun()
 
-# --- [C] 밴 현황판 (아래로 내려옴) ---
+# --- [C] 밴 현황판 ---
 st.write("#### 📊 실시간 밴 현황")
 if not df_veto.empty:
     st.table(df_veto)
@@ -123,14 +131,12 @@ else:
 st.write("---")
 
 # --- [D] 결과 도출 (전원 투표 완료 시에만 작동) ---
-# 투표한 사람 수 계산
 voted_members = df_veto["name"].tolist() if not df_veto.empty else []
 all_voted = len(set(voted_members)) >= len(friends)
 
 if not all_voted:
     st.warning(f"⏳ 아직 거부권을 행사하지 않은 멤버가 있어! (현재 {len(set(voted_members))}/{len(friends)}명 완료)")
 
-# disabled 속성으로 투표가 안 끝났으면 버튼 클릭 막기
 if st.button("🚀 Roll the Dice", disabled=not all_voted):
     forbidden = set(df_veto["veto"].tolist())
     remaining = [opt for opt in options if opt not in forbidden and opt != "없음"]
@@ -147,18 +153,17 @@ if st.button("🚀 Roll the Dice", disabled=not all_voted):
         else:
             final = random.choice(remaining)
             
-        # (여기서부터 복사!)
         st.balloons()
         st.markdown(f"""
             <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                 <h3 style="color:white; margin:0; opacity:0.8;">Today's Choice</h3>
                 <h1 style="color:white; font-size:45px; margin-top:10px;">✨ {final} ✨</h1>
             </div>
-        """, unsafe_allow_html=True) # <--- 아까도 이 줄을 빼먹어서 에러 났었지!
+        """, unsafe_allow_html=True)
 
 st.write("---")
 
-# --- [E] 카톡 초대장 섹션 (맨 아래로 이동) ---
+# --- [E] 카톡 초대장 섹션 ---
 with st.expander("💌 카톡 초대장 복사하기"):
     st.markdown("오른쪽 상단 **복사 아이콘(📋)**을 눌러서 단톡방에 뿌려!")
     
