@@ -3,58 +3,6 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import random
 import time
-import os
-
-# --- [비밀 금고 자동 생성기] ---
-# 네가 터미널을 어디서 켰든 상관없이, 알아서 폴더랑 파일을 만들고 시작함!
-try:
-    os.makedirs(".streamlit", exist_ok=True)
-    with open(".streamlit/secrets.toml", "w", encoding="utf-8") as f:
-        f.write("""
-[connections.gsheets]
-type = "service_account"
-project_id = "logical-matrix-494213-d5"
-private_key_id = "eaa6db244b4d00db67a3b720debdb16cc220ebf8"
-private_key = \"\"\"-----BEGIN PRIVATE KEY-----
-MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDDOWlUFKco+dy6
-y89h4Q8OuEEAHmI0Z69LsFNF7/yg3lasklwQXtuDugKx2ZSPQg213UJZWe+JOvpB
-c1SROABpYNamvTY9flxqiGDoH25kZeiejMweEXPChZD+Rb88KMxnDE/YzhEBwXLH
-ofr7Zy+UwqTp8LijRN1dMcaw5bzx5piUb6XIcRe0Q8m3mkmRzr0tMVLRzwqQVNgQ
-ZAKokHvnaIJlAhWSkdK5v4tuehHwH0opfLezLTFSvHmrQkjfHIEqkPTAY70I2y8E
-nMD3+2AYFS34BL+daQYGvmBCEfri4DlYBDAzVmYa0phD+0tly+yg1mLvor4DdrhF
-fk7cFi//AgMBAAECggEAYIHJkVCSX/3AwbDOCH9Wz7qDG3lpp6lX7U0xpUGhO68d
-3rqNe2RBFOnHuj6qo3UOTQifa4c7lDXND7zhIday0WUXR58CqLyGF/3qFeWvzz7X
-k0VcBEMxXAhmKGS3SBiNDyX1dOJNYvZL9OccqNoWGe5s0t72j3OUEKVyKPGxCU1L
-xQ/WsETExS0oLkvzOEdoVfqJCIwuY0QnwCMGNQLDmOsX7Gz2lIhdCTvBctHFfzxe
-BLHhtS880AzqEuBIIbcA2NbhL7CeLmuQxglkqqNzuFZCi1QJZ2xJfdFS5q3Sa02R
-NZ58udxHYZxlS1ZFWDdCTg52pRWw0LtdWCfh93XNFQKBgQD/V1wawMuDVn2OJL6N
-zpZKgdtH82kSTe3swD0MqhX56acdeu2FsY/pce5m/40EbCWG7ESz6BvKg5GBOM8+
-/oi7/o/Ak7Aza4cMs4CpGtVrC6DoeLXWVggPE0b5CUoBLHDL4/twDk6muWkXlLUZ
-bPZR2ir90Sf5RCukIblWXULobQKBgQDDuljtXQ/nCzJa0mZlFuJcQbCAr0EUnJLW
-ZwqqZ5zhRCrSZO9lSbwpP8hNe5hIg7xW8J5+nnVjOjlk8u44akoc2BbayteseCP/
-mWoMGQcK2PlMyj2k1Vd/uSX4EgtnsYdAYzeuS6uVH1Cg3/wPBK+0ByFxaPWuubSL
-QoaKi+OOmwKBgE+8Bu3vwF1d980YWkzL8xCHJmN8dhYaMa7ZhPbccgpdVSsWhO9X
-uDnMswaEzJNR9hIA259WXr9JgHlatRTVxPr3jgoz1DTqYfysXQPxdi18Lx4I+7dX
-nCKhAWuo4+wj5YE1ywF95j+X7GJJtJeg9/Yta3lhA9uJ1xrk0QxQCSGtAoGAai4Q
-igw/UUbItW6Ir/R/Li9Qsi7g7m6WVgumRJVbDPWvCV5KZLdghTwdzLLtBQG6TavR
-P710zzTJ6BLF2wMGW6l6lI0P/XdbiBDQ7+kv4dmdPORGFsLJ6fcmOvKHD2TGi86H
-aV2Rop9PXUbFddxD+TUZFm4rQfNql1WqqUSEWVsCgYBIeUxJfJjLtRTWo/kfxFdd
-qKsCctBna4UcSuXB5bDTNTWx4euVcGqILFu1sm2RLJpAU1/wNTJG36q/y83XK5Is
-NrPIJkPFo9Z5POru8p53P3B/rBJKJeQViGZndNUOaJFZ9720LRToFgFBwNInHt6M
-AYWOApW9c7I/PGwYvdiUog==
------END PRIVATE KEY-----
-\"\"\"
-client_email = "cozybois@logical-matrix-494213-d5.iam.gserviceaccount.com"
-client_id = "104273753685531476665"
-auth_uri = "https://accounts.google.com/o/oauth2/auth"
-token_uri = "https://oauth2.googleapis.com/token"
-auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
-client_x509_cert_url = "https://www.googleapis.com/robot/v1/metadata/x509/cozybois%40logical-matrix-494213-d5.iam.gserviceaccount.com"
-spreadsheet = "https://docs.google.com/spreadsheets/d/1bGoA_Yrm_R7eZL4yqjW9ASFTJg61MNV81vPeAQFBjs8/edit?usp=sharing"
-        """)
-except Exception as e:
-    pass
-# --------------------------------
 
 # 1. 페이지 설정 및 디자인
 st.set_page_config(page_title="For Cozybois", page_icon="🛋️", layout="centered")
@@ -68,12 +16,13 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2. 아주 깨-끗해진 연결 코드 (위에 만든 금고에서 알아서 읽어옴!)
+# 2. 아주 깨-끗해진 연결 코드 (이제 Streamlit Cloud 서버 설정에서 알아서 가져옴!)
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 def load_data(sheet_name, columns):
     try:
-        return conn.read(worksheet=sheet_name, ttl=10)
+        # 구글 화남 방지(429 에러 방지) 5초 쿨타임
+        return conn.read(worksheet=sheet_name, ttl=5)
     except:
         return pd.DataFrame(columns=columns)
 
@@ -93,28 +42,25 @@ with st.sidebar:
             conn.update(worksheet="vetoes", data=pd.DataFrame(columns=["name", "veto"]))
             st.rerun()
 
-# 4. 데이터 실시간 로드
+# 4. 데이터 실시간 로드 (빈 시트 에러 방지 포함)
 df_veto = load_data("vetoes", ["name", "veto"])
 df_options = load_data("options", ["item"])
 df_members = load_data("members", ["name"])
 
-# ⭐ 빈 시트의 오지랖(숫자 인식) 방지 및 문자열(텍스트) 강제 지정
 df_options["item"] = df_options["item"].astype(str).replace(["nan", "None", "<NA>"], "")
 df_members["name"] = df_members["name"].astype(str).replace(["nan", "None", "<NA>"], "")
 
-# 리스트 변환 (빈칸 제외하고 깔끔하게)
 options = [x for x in df_options["item"].tolist() if x.strip()] if not df_options.empty else ["강남역", "홍대"]
 friends = [x for x in df_members["name"].tolist() if x.strip()] if not df_members.empty else ["성우", "창민"]
+
 # 5. 메인 화면
 st.title("🛋️ For Cozybois")
 st.markdown("##### 실시간 편집 & 공유 시스템")
-# --- [새로 추가할 부분: 카톡 초대장 복사] ---
+
+# --- 초대장 복사 파트 ---
 with st.expander("💌 카톡 초대장 복사하기"):
     st.markdown("아래 박스 오른쪽 위에 있는 **복사 아이콘(📋)**을 눌러서 단톡방에 뿌려!")
-    
-    # 앱 주소는 나중에 Streamlit 배포 주소로 바꿔줘!
-    APP_URL = "https://your-app-name.streamlit.app" 
-    
+    APP_URL = "https://for-the-lazyss.streamlit.app" # <-- 나중에 니 진짜 주소로 바꿔!
     invite_text = f"""🛋️ [For Cozybois] 오늘 어디 갈래?
 
 ✔️ "아무거나" 금지! 가기 싫은 곳 딱 하나만 밴(Ban) 해라.
@@ -124,7 +70,7 @@ with st.expander("💌 카톡 초대장 복사하기"):
 {APP_URL}
 """
     st.code(invite_text, language="text")
-# ------------------------------------
+
 with st.expander("📝 멤버 및 장소 후보 편집하기"):
     col_edit1, col_edit2 = st.columns(2)
     with col_edit1:
@@ -185,9 +131,3 @@ if st.button("🚀 Roll the Dice"):
                 <h1 style="color:white; font-size:40px; margin-top:10px;">✨ {final} ✨</h1>
             </div>
         """, unsafe_allow_html=True)
-        
-        share_text = f"🛋️ For Cozybois 모임 결정!\n\n✨ 오늘의 장소: {final}\n\n결과 확인하기:\nhttps://docs.google.com/spreadsheets/d/1bGoA_Yrm_R7eZL4yqjW9ASFTJg61MNV81vPeAQFBjs8" 
-        
-        st.write(" ")
-        st.info("📋 아래 내용을 복사해서 카톡에 뿌리세요:")
-        st.code(share_text)
