@@ -42,8 +42,24 @@ with st.sidebar:
         st.success("✅ Admin Verified")
         master_pick = st.text_input("🤫 내 마음속 1순위", "")
         bias = st.slider("당첨 확률 보정 (%)", 0, 100, 80)
-        if st.button("🔴 모든 데이터 초기화"):
+        
+        st.write("---")
+        st.write("⚠️ **데이터 관리**")
+        
+        # [버튼 1] 투표 내역만 초기화 (다음 모임 준비용)
+        if st.button("🔄 투표(밴) 내역만 초기화"):
             conn.update(worksheet="vetoes", data=pd.DataFrame(columns=["name", "veto"]))
+            st.success("투표 내역이 깔끔하게 지워졌어!")
+            time.sleep(1)
+            st.rerun()
+            
+        # [버튼 2] 완전 전체 초기화 (새 모임 세팅용)
+        if st.button("🧨 멤버/장소까지 싹 다 초기화"):
+            conn.update(worksheet="vetoes", data=pd.DataFrame(columns=["name", "veto"]))
+            conn.update(worksheet="options", data=pd.DataFrame(columns=["item"]))
+            conn.update(worksheet="members", data=pd.DataFrame(columns=["name"]))
+            st.error("모든 데이터가 완전 초기화됐어!")
+            time.sleep(1)
             st.rerun()
 
 # 4. 데이터 로드 및 전처리
