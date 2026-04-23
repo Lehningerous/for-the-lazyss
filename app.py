@@ -3,30 +3,44 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import random
 import time
+import os
 
-# 1. 페이지 설정 및 디자인
+# --- [비밀 금고 자동 생성기] ---
+# 서버에서도 로컬처럼 안정적으로 돌아가도록 금고를 확인하는 로직
+try:
+    os.makedirs(".streamlit", exist_ok=True)
+    if not os.path.exists(".streamlit/secrets.toml"):
+        with open(".streamlit/secrets.toml", "w", encoding="utf-8") as f:
+            f.write("# Secrets are managed in Streamlit Cloud Settings")
+except:
+    pass
+
+# 1. 페이지 설정 및 디자인 (Man Utd Red 테마)
 st.set_page_config(page_title="For Cozybois", page_icon="🛋️", layout="centered")
 
 st.markdown("""
     <style>
     .main { background-color: #121212; color: #e0e0e0; }
-    .stButton>button { width: 100%; background-color: #da291c; color: white; border-radius: 8px; height: 3.5em; font-weight: bold; border: none; }
+    .stButton>button {
+        width: 100%; background-color: #da291c; color: white;
+        border-radius: 8px; height: 3.5em; font-weight: bold; border: none;
+    }
     .stButton>button:hover { background-color: #ff3c2e; transform: scale(1.02); color: white; }
     .stTextArea textarea, .stTextInput input { background-color: #252525 !important; color: white !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. 아주 깨-끗해진 연결 코드 (이제 Streamlit Cloud 서버 설정에서 알아서 가져옴!)
+# 2. 구글 시트 연결
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 def load_data(sheet_name, columns):
     try:
-        # 구글 화남 방지(429 에러 방지) 5초 쿨타임
+        # API 할당량 보호를 위해 5초 캐시 적용
         return conn.read(worksheet=sheet_name, ttl=5)
     except:
         return pd.DataFrame(columns=columns)
 
-# 3. 사이드바 (마스터 컨트롤)
+# 3. 사이드바: 마스터 컨트롤 (GGMU 전용)
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg", width=80)
     st.header("⚙️ Admin Control")
@@ -42,7 +56,7 @@ with st.sidebar:
             conn.update(worksheet="vetoes", data=pd.DataFrame(columns=["name", "veto"]))
             st.rerun()
 
-# 4. 데이터 실시간 로드 (빈 시트 에러 방지 포함)
+# 4. 데이터 로드 및 전처리
 df_veto = load_data("vetoes", ["name", "veto"])
 df_options = load_data("options", ["item"])
 df_members = load_data("members", ["name"])
@@ -57,20 +71,24 @@ friends = [x for x in df_members["name"].tolist() if x.strip()] if not df_member
 st.title("🛋️ For Cozybois")
 st.markdown("##### 실시간 편집 & 공유 시스템")
 
-# --- 초대장 복사 파트 ---
+# --- [A] 카톡 초대장 섹션 (진짜 주소 반영) ---
 with st.expander("💌 카톡 초대장 복사하기"):
-    st.markdown("아래 박스 오른쪽 위에 있는 **복사 아이콘(📋)**을 눌러서 단톡방에 뿌려!")
-    APP_URL = "https://for-the-lazyss.streamlit.app" # <-- 나중에 니 진짜 주소로 바꿔!
+    st.markdown("오른쪽 상단 **복사 아이콘(📋)**을 눌러서 단톡방에 뿌려!")
+    
+    # 성우의 진짜 앱 주소로 업데이트 완료!
+    REAL_APP_URL = "https://for-the-lazyss.streamlit.app"
+    
     invite_text = f"""🛋️ [For Cozybois] 오늘 어디 갈래?
 
 ✔️ "아무거나" 금지! 가기 싫은 곳 딱 하나만 밴(Ban) 해라.
 ✔️ 마지막 결정은 운명의 주사위가 한다 🎲
 
 👇 지금 바로 접속해서 내 밴 등록하기 👇
-{APP_URL}
+{REAL_APP_URL}
 """
     st.code(invite_text, language="text")
 
+# --- [B] 실시간 편집 섹션 ---
 with st.expander("📝 멤버 및 장소 후보 편집하기"):
     col_edit1, col_edit2 = st.columns(2)
     with col_edit1:
@@ -88,6 +106,7 @@ with st.expander("📝 멤버 및 장소 후보 편집하기"):
 
 st.write("---")
 
+# --- [C] 밴 현황 및 입력 ---
 st.write("### 📊 실시간 밴 현황")
 if not df_veto.empty:
     st.table(df_veto)
@@ -108,6 +127,7 @@ if st.button("밴 등록하기"):
 
 st.write("---")
 
+# --- [D] 결과 도출 ---
 if st.button("🚀 Roll the Dice"):
     forbidden = set(df_veto["veto"].tolist())
     remaining = [opt for opt in options if opt not in forbidden and opt != "없음"]
@@ -126,8 +146,5 @@ if st.button("🚀 Roll the Dice"):
             
         st.balloons()
         st.markdown(f"""
-            <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center;">
-                <h3 style="color:white; margin:0; opacity:0.8;">Today's Choice</h3>
-                <h1 style="color:white; font-size:40px; margin-top:10px;">✨ {final} ✨</h1>
-            </div>
-        """, unsafe_allow_html=True)
+            <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                <h3
