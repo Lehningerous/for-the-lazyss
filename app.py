@@ -147,6 +147,29 @@ if st.button("🚀 Roll the Dice", disabled=not all_voted):
         else:
             final = random.choice(remaining)
             
+        # (여기서부터 복사!)
         st.balloons()
         st.markdown(f"""
-            <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center; box-
+            <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                <h3 style="color:white; margin:0; opacity:0.8;">Today's Choice</h3>
+                <h1 style="color:white; font-size:45px; margin-top:10px;">✨ {final} ✨</h1>
+            </div>
+        """, unsafe_allow_html=True) # <--- 아까도 이 줄을 빼먹어서 에러 났었지!
+
+st.write("---")
+
+# --- [E] 카톡 초대장 섹션 (맨 아래로 이동) ---
+with st.expander("💌 카톡 초대장 복사하기"):
+    st.markdown("오른쪽 상단 **복사 아이콘(📋)**을 눌러서 단톡방에 뿌려!")
+    
+    REAL_APP_URL = "https://for-the-lazyss-yw4cjzcuu8fwuu8dqigvtu.streamlit.app/"
+    
+    invite_text = f"""🛋️ [For Cozybois] 오늘 어디 갈래?
+
+✔️ "아무거나" 금지! 가기 싫은 곳 딱 하나만 밴(Ban) 해라.
+✔️ 전원 밴 완료 시에만 돌림판이 돌아간다 🎲
+
+👇 지금 바로 접속해서 내 밴 등록하기 👇
+{REAL_APP_URL}
+"""
+    st.code(invite_text, language="text")
