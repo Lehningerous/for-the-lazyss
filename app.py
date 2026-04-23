@@ -34,7 +34,6 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 
 def load_data(sheet_name, columns):
     try:
-        # API 할당량 보호 (5초 캐시)
         return conn.read(worksheet=sheet_name, ttl=5)
     except:
         return pd.DataFrame(columns=columns)
@@ -66,29 +65,23 @@ df_members["name"] = df_members["name"].astype(str).replace(["nan", "None", "<NA
 options = [x for x in df_options["item"].tolist() if x.strip()] if not df_options.empty else ["강남역", "홍대"]
 friends = [x for x in df_members["name"].tolist() if x.strip()] if not df_members.empty else ["성우", "창민"]
 
-# 5. 메인 화면
+# 5. 메인 화면 (서두 & 가이드)
 st.title("🛋️ For Cozybois")
-st.markdown("##### 실시간 편집 & 공유 시스템")
 
-# --- [A] 카톡 초대장 섹션 ---
-with st.expander("💌 카톡 초대장 복사하기"):
-    st.markdown("오른쪽 상단 **복사 아이콘(📋)**을 눌러서 단톡방에 뿌려!")
-    
-    # 🔗 드디어 찾은 진짜 앱 주소!
-    REAL_APP_URL = "https://for-the-lazyss-yw4cjzcuu8fwuu8dqigvtu.streamlit.app/"
-    
-    invite_text = f"""🛋️ [For Cozybois] 오늘 어디 갈래?
+# [NEW] 서두 이미지 및 사용법 가이드
+# 아래 쌍따옴표 안의 인터넷 주소를 네가 원하는 이미지 주소로 언제든 바꿀 수 있어!
+COVER_IMAGE_URL = "https://images.unsplash.com/photo-1543807535-eceef0bc6599?q=80&w=1000&auto=format&fit=crop"
+st.image(COVER_IMAGE_URL, use_container_width=True)
 
-✔️ "아무거나" 금지! 가기 싫은 곳 딱 하나만 밴(Ban) 해라.
-✔️ 마지막 결정은 운명의 주사위가 한다 🎲
+st.info("""
+**📌 For Cozybois 사용 설명서**
+1. **후보 관리:** 메뉴/장소를 추가하려면 하단의 `멤버 및 장소 후보 추가하기`를 눌러.
+2. **거부권 행사:** 각자 절대 가기 싫은 곳을 하나씩 골라 밴(Ban)을 해줘.
+3. **돌림판 돌리기:** 모두가 밴을 완료해야만 주사위를 굴릴 수 있어! 🎲
+""")
 
-👇 지금 바로 접속해서 내 밴 등록하기 👇
-{REAL_APP_URL}
-"""
-    st.code(invite_text, language="text")
-
-# --- [B] 실시간 편집 섹션 ---
-with st.expander("📝 멤버 및 장소 후보 편집하기"):
+# --- [A] 실시간 편집 섹션 ---
+with st.expander("📝 멤버 및 장소 후보 추가하기"):
     col_edit1, col_edit2 = st.columns(2)
     with col_edit1:
         st.write("👥 멤버 편집")
@@ -105,12 +98,8 @@ with st.expander("📝 멤버 및 장소 후보 편집하기"):
 
 st.write("---")
 
-# --- [C] 밴 현황 및 입력 ---
-st.write("### 📊 실시간 밴 현황")
-if not df_veto.empty:
-    st.table(df_veto)
-
-st.subheader("🚫 거부권 행사")
+# --- [B] 거부권 행사 (위로 올라옴) ---
+st.write("### 🚫 거부권 행사")
 c1, c2 = st.columns(2)
 with c1:
     my_name = st.selectbox("누구야?", friends)
@@ -124,10 +113,25 @@ if st.button("밴 등록하기"):
     st.success("반영 완료!")
     st.rerun()
 
+# --- [C] 밴 현황판 (아래로 내려옴) ---
+st.write("#### 📊 실시간 밴 현황")
+if not df_veto.empty:
+    st.table(df_veto)
+else:
+    st.caption("아직 밴한 사람이 없네. 클린하다.")
+
 st.write("---")
 
-# --- [D] 결과 도출 ---
-if st.button("🚀 Roll the Dice"):
+# --- [D] 결과 도출 (전원 투표 완료 시에만 작동) ---
+# 투표한 사람 수 계산
+voted_members = df_veto["name"].tolist() if not df_veto.empty else []
+all_voted = len(set(voted_members)) >= len(friends)
+
+if not all_voted:
+    st.warning(f"⏳ 아직 거부권을 행사하지 않은 멤버가 있어! (현재 {len(set(voted_members))}/{len(friends)}명 완료)")
+
+# disabled 속성으로 투표가 안 끝났으면 버튼 클릭 막기
+if st.button("🚀 Roll the Dice", disabled=not all_voted):
     forbidden = set(df_veto["veto"].tolist())
     remaining = [opt for opt in options if opt not in forbidden and opt != "없음"]
 
@@ -145,8 +149,4 @@ if st.button("🚀 Roll the Dice"):
             
         st.balloons()
         st.markdown(f"""
-            <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                <h3 style="color:white; margin:0; opacity:0.8;">Today's Choice</h3>
-                <h1 style="color:white; font-size:45px; margin-top:10px;">✨ {final} ✨</h1>
-            </div>
-        """, unsafe_allow_html=True)
+            <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center; box-
