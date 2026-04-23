@@ -6,7 +6,6 @@ import time
 import os
 
 # --- [비밀 금고 자동 생성기] ---
-# 서버에서도 로컬처럼 안정적으로 돌아가도록 금고를 확인하는 로직
 try:
     os.makedirs(".streamlit", exist_ok=True)
     if not os.path.exists(".streamlit/secrets.toml"):
@@ -15,7 +14,7 @@ try:
 except:
     pass
 
-# 1. 페이지 설정 및 디자인 (Man Utd Red 테마)
+# 1. 페이지 설정 및 디자인
 st.set_page_config(page_title="For Cozybois", page_icon="🛋️", layout="centered")
 
 st.markdown("""
@@ -35,12 +34,12 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 
 def load_data(sheet_name, columns):
     try:
-        # API 할당량 보호를 위해 5초 캐시 적용
+        # API 할당량 보호 (5초 캐시)
         return conn.read(worksheet=sheet_name, ttl=5)
     except:
         return pd.DataFrame(columns=columns)
 
-# 3. 사이드바: 마스터 컨트롤 (GGMU 전용)
+# 3. 사이드바: 마스터 컨트롤 (Admin)
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg", width=80)
     st.header("⚙️ Admin Control")
@@ -71,12 +70,12 @@ friends = [x for x in df_members["name"].tolist() if x.strip()] if not df_member
 st.title("🛋️ For Cozybois")
 st.markdown("##### 실시간 편집 & 공유 시스템")
 
-# --- [A] 카톡 초대장 섹션 (진짜 주소 반영) ---
+# --- [A] 카톡 초대장 섹션 ---
 with st.expander("💌 카톡 초대장 복사하기"):
     st.markdown("오른쪽 상단 **복사 아이콘(📋)**을 눌러서 단톡방에 뿌려!")
     
-    # 성우의 진짜 앱 주소로 업데이트 완료!
-    REAL_APP_URL = "https://for-the-lazyss.streamlit.app"
+    # 🔗 드디어 찾은 진짜 앱 주소!
+    REAL_APP_URL = "https://for-the-lazyss-yw4cjzcuu8fwuu8dqigvtu.streamlit.app/"
     
     invite_text = f"""🛋️ [For Cozybois] 오늘 어디 갈래?
 
