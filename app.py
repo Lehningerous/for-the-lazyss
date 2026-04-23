@@ -147,4 +147,7 @@ if st.button("🚀 Roll the Dice"):
         st.balloons()
         st.markdown(f"""
             <div style="background-color:#da291c; padding:30px; border-radius:15px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                <h3
+                <h3 style="color:white; margin:0; opacity:0.8;">Today's Choice</h3>
+                <h1 style="color:white; font-size:45px; margin-top:10px;">✨ {final} ✨</h1>
+            </div>
+        """, unsafe_allow_html=True)
